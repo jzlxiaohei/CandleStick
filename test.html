@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="d3.js"></script>
+    <script src="utils.js"></script>
+    <script src="dfm.js"></script>
+    <script src="candle.js"></script>
+    <style>
+
+        .candle-stick.up line{
+            stroke: red;
+        }
+        .candle-stick.down line{
+            stroke: green;
+        }
+
+        .candle-stick.up rect{
+            fill:red;
+        }
+        .candle-stick.down rect{
+            fill:white;
+            stroke: green;
+        }
+
+    </style>
+</head>
+<body>
+    <script>
+
+        var symbol ='sh000001',
+            interval= 1,
+            rows=50;
+        var api = 'http://api.markets.wallstreetcn.com:80/v1/chart.json?symbol=' + symbol + '&interval=' + interval + '&rows=' + rows;
+
+
+        var margin={top:20,right:20,bottom:30,left:50},
+            width = 660 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+
+
+        $.get(api,function(data){
+
+            var data = data.results;
+            var minMaxDate = d3.extent(data,function(d){
+                return new Date( _M.d(d) )
+            })
+            var minMaxPrice = [
+                d3.min(data,function(d){
+                    return _M.l(d)
+                }),
+                d3.max(data,function(d){
+                    return _M.h(d)
+                })
+            ]
+
+            var svg = d3.select('body').append('svg')
+                    .attr('width',660)
+                    .attr('height',400);
+            var xScale = d3.time.scale(),
+                    yScale = d3.scale.linear();
+
+            window.xScale = xScale,
+                    window.yScale = yScale;
+
+            xScale.domain(minMaxDate).range([0,width]);
+            yScale.domain(minMaxPrice).range([height,0]);
+
+
+            var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient('bottom')
+                    .ticks(5)
+            var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient('left')
+                    .ticks(8)
+
+            var candle = candleChart()
+                    .xScale(xScale)
+                    .yScale(yScale)
+
+
+            var  g =svg.append('g')
+                    .attr('transform','translate('+margin.left+','+margin.top+')')
+                    .classed('chart-area',true);
+
+            g.append('g')
+                    .attr('class', 'x axis')
+                    .attr('transform', 'translate(0,' + height + ')')
+                    .call(xAxis);
+
+            g.append('g')
+                    .attr('class', 'y axis')
+                    .call(yAxis);
+
+            g.data([data])
+                .call(candle);
+
+            var zoom = d3.behavior.zoom()
+                    .x(xScale)
+                    .y(yScale)
+                    .scaleExtent([0.1,10])
+                    .center([width/2,height/2])
+                    .on('zoom',function(){
+                        console.log('zoom')
+                        svg.select('.x.axis').call(xAxis)
+                        svg.select('.y.axis').call(yAxis)
+                        g.call(candle)
+                    })
+
+            svg.call(zoom)
+
+        },'jsonp')
+
+
+    </script>
+</body>
+</html>
