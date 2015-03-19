@@ -16,6 +16,7 @@ var candleChart = function(){
 
         var series;
         selection.each(function(data){
+
             series = d3.select(this)
                 .selectAll('.candle-series')
                 .data([data]);

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="w.js"></script>
+    <script src="component/grid.js"></script>
+    <script src="component/axis.js"></script>
+    <script src="component/tips.js"></script>
+    <script src="chart/line.js"></script>
+    <script src="chart/area.js"></script>
+    <script src="chart/ohlc.js"></script>
+    <script src="chart/candleStick.js"></script>
+</head>
+<body>
+
+    <div id="svg">
+
+
+    </div>
+
+
+    <script>
+        var w = new W(dom,options);
+
+        w.component.add()
+        w.addComponent('axis',options);
+        w.addComponent('grid',options);
+        w.addComponent('toolTips',options);
+
+        // set and format Data
+        w.addData('sh000001',data);
+        w.addChart('sh000001','ohlc',options);
+
+        w.addData('XAUUSD',data);
+        w.addChart(key,'area');
+        w.addChart(key,'line');
+
+        w.draw();
+
+        w.removeComponent('axis',{orient:'right'});
+        w.hideComponent('axis',{orient:'left'});
+
+        w.hideComponent('grid'); // x y hide
+
+        w.removeChart('sh000001','area');
+//
+//        w.widget('line').start();
+//
+//        w.widget('line').end();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>
