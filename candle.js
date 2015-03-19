@@ -38,7 +38,6 @@ var candleChart = function(){
             stickLine(sticks)
             stickRect(sticks)
 
-
             sticks.exit().remove();
         })
     }

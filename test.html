@@ -60,6 +60,8 @@
             var svg = d3.select('body').append('svg')
                     .attr('width',660)
                     .attr('height',400);
+
+
             var xScale = d3.time.scale(),
                     yScale = d3.scale.linear();
 
@@ -87,6 +89,13 @@
             var  g =svg.append('g')
                     .attr('transform','translate('+margin.left+','+margin.top+')')
                     .classed('chart-area',true);
+            var plotArea  = g.append('g')
+            plotArea.append('clipPath')
+                    .attr('id','plot-area')
+                    .append('rect')
+                    .attr({width:width,height:height})
+
+                plotArea.attr('clip-path','url(#plot-area)')
 
             g.append('g')
                     .attr('class', 'x axis')
@@ -97,7 +106,7 @@
                     .attr('class', 'y axis')
                     .call(yAxis);
 
-            g.data([data])
+            plotArea.data([data])
                 .call(candle);
 
             var zoom = d3.behavior.zoom()
@@ -106,17 +115,26 @@
                     .scaleExtent([0.1,10])
                     .center([width/2,height/2])
                     .on('zoom',function(){
-                        console.log('zoom')
                         svg.select('.x.axis').call(xAxis)
                         svg.select('.y.axis').call(yAxis)
-                        g.call(candle)
+                        plotArea.call(candle)
                     })
 
             svg.call(zoom)
 
+            svg.on('click',function(e){
+                console.log(d3.mouse(this))
+            })
+
         },'jsonp')
 
 
+
+        function createInterpolation(max, min, a,b) {
+            return function(e) {
+                return (e - min) * (a-b)/(max-min);
+            }
+        }
     </script>
 </body>
 </html>
